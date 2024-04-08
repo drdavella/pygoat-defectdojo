@@ -15,14 +15,10 @@ jobs:
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFECTDOJO_TOKEN: ${{ secrets.DEFECTDOJO_TOKEN }}
-          DEFECTDOJO_URL: ${{ secrets.DEFECTDOJO_URL }}
         run: |
-          URL="$DEFECTDOJO_URL/api/v2/findings/?limit=200&offset=0&product_name=pygoat_demo"
-          curl -v -H "Authorization: Token $DEFECTDOJO_TOKEN" "$URL" -o defectdojo.findings.json
+          # Assume the JSON file is in the root of the repository
+          PIXEE_URI="https://cvy4aat49k.execute-api.us-east-1.amazonaws.com/prod/"
 
-          cat defectdojo.findings.json
-
-          SECRET=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://app.pixee.ai" | jq -j '.value')
-          API_RESPONSE=$(curl -v -X PUT -H "Authorization: Bearer $SECRET" -H "Content-Type: multipart/form-data" -F "file=@defectdojo.findings.json" "https://api.pixee.ai/analysis-input/PixeeSandbox/pygoat-defectdojo/$GITHUB_SHA/defectdojo")
+          SECRET=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$PIXEE_URI" | jq -j '.value')
+          API_RESPONSE=$(curl -v -X PUT -H "Authorization: Bearer $SECRET" -H "Content-Type: multipart/form-data" -F "file=@defectdojo.findings.json" "$PIXEE_URI/analysis-input/drdavella/pygoat-defectdojo/$GITHUB_SHA/defectdojo")
           echo "$API_RESPONSE"
