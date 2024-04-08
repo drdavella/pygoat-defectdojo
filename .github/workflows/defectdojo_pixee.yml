@@ -11,6 +11,7 @@ jobs:
     name: "Publish Sonar JSON to Pixee"
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: "Publish DefectDojo JSON to Pixee"
         shell: bash
         env:
